@@ -18,8 +18,8 @@ $Configuration = array(
     "base_url" => $base_url,
     // old code start here
     // Yahoo details
-    "yahoo_consumer_key" => 'dj0yJmk9RG1QMGc4SmlNbWhOJmQ9WVdrOU4yTnZkVFEzTm1jbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD05MQ--',
-    "yahoo_consumer_secret" => '5d2ed51e195d8198082d02e53506d0560baca849',
+    "yahoo_consumer_key" => 'dj0yJmk9S29uR2Fwb29JV09NJmQ9WVdrOU5IZDBlRTFPTXpJbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1mZQ--',
+    "yahoo_consumer_secret" => 'aea0c1c37d6186e6356daee0eb4fcfed19646b19',
     "yahoo_callback_url" => $base_url . 'index.php?type=yahoo',
     // #Twitter details
     "twitter_consumer_key" => '',
@@ -70,9 +70,9 @@ $Configuration = array(
     "mailchimp_redirect_uri" => $base_url . "index.php?type=mailchimp",
     "mailchimp_access_token" => "",
     #Microsoft details
-    "microsoft_client_id" => "",
-    "microsoft_client_secret" => "",
-    "microsoft_redirect_uri" => "https://suite.social/login/microsoft.php",
+    "microsoft_client_id" => "9a20a74b-eba3-481f-96af-1c49790f3e50",
+    "microsoft_client_secret" => "tkumzuRAZ9252oTKPL4*{_!",
+    "microsoft_redirect_uri" => $base_url . "microsoft.php",
     #Google details
     "google_client_id" => "437252600190-8u9k04t5ca8k6905mn0lflpcphlit12f.apps.googleusercontent.com",
     "google_client_secret" => "kYAGv2RKrGp56wERk0V8ItfR",
@@ -92,6 +92,7 @@ $ActiveServices = array(
     "instagram" => true, # set true to ativate the subscription via email
     "twitter" => true, # set true to ativate the subscription via email
     "yahoo" => true, # set true to ativate the subscription via email
+    "microsoft" => true, # set true to ativate the subscription via email
 );
 $responsePage = array("success" => "success",
     "error" => "error",
@@ -536,11 +537,12 @@ if (isset($_GET['type'])) {
 // For Microsoft
     if ($_GET['type'] == 'microsoft') {
 
-        require_once("./app/classes/Microsoft.class.php");
-        $response = json_decode(Microsoft::getEmail());
-        if (isset($response->status) && $response->status == "url") {
-            header("Location: " . $response->data->url);
+        if (!$ActiveServices["microsoft"]) {
+            exit("Service not active!");
         }
+        $scopes = urlencode('https://graph.microsoft.com/mail.read https://graph.microsoft.com/Contacts.Read https://graph.microsoft.com/User.Read');
+        $url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=" . $Configuration["microsoft_client_id"] . "&redirect_uri=" . $Configuration["microsoft_redirect_uri"] . "&response_type=code&scope=".$scopes;
+        header("Location: " . $url);
     }
 
 // For Gmail

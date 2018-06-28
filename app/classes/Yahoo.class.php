@@ -31,8 +31,8 @@ class Yahoo {
 
                 $user_data['user']['id'] = $request->guid;
                 $user_data['user']['displayName'] = $request->nickname;
-                $user_data['user']['gender'] = $request->ageCategory;
-                $user_data['user']['email'] = "{$request->nickname}@ymail.com";
+                $user_data['user']['gender'] = ($request->gender == 'M') ? 'Male' : 'Female';
+                $user_data['user']['email'] = @$request->emails[0]->handle;
                 $user_data['user']['image'] = $request->image->imageUrl;
                 $user_data['user']['record_count'] = $results->total;
                 $records=Handling::returnarray($results->contact, 7);

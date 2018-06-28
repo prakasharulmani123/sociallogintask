@@ -170,7 +170,7 @@ class Handling {
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => (empty($user->displayName) ? $user->fileAs : $user->displayName),
-                    "phone" => $user->mobilePhone,
+                    "phone" => @$user->mobilePhone,
                     "email" => (isset($user->emailAddresses[0]->name) ? $user->emailAddresses[0]->name : ""),
                 );
             }

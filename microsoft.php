@@ -1,17 +1,20 @@
 <?php
-
 error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
+
+ob_start();
+session_start();
+
 require_once("./app/classes/Handling.class.php");
-$base_url = "https://suite.social/login/";
+$base_url = "https://sociallogin.my/";
 $Configuration = array(
     #Base url
     "base_url" => $base_url,
     #Microsoft details
-    "microsoft_client_id" => "000000004022D7CE",
-    "microsoft_client_secret" => "rjvVMOSLV618;tmziW08#?%",
-    "microsoft_redirect_uri" => $base_url."microsoft.php",
+    "microsoft_client_id" => "9a20a74b-eba3-481f-96af-1c49790f3e50",
+    "microsoft_client_secret" => "tkumzuRAZ9252oTKPL4*{_!",
+    "microsoft_redirect_uri" => $base_url . "microsoft.php"
 );
 
 if ($_GET['code']) {
@@ -30,9 +33,9 @@ if ($_GET['code']) {
         $user_response = curl_file_get_contents($get_user_request, $token->access_token);
         $user_response = json_decode($user_response);
         $user_data['user']['id'] = $user_response->id;
-        $user_data['user']['displayName'] = $user_response->displayName;
+        $user_data['user']['displayName'] = @$user_response->displayName;
         $user_data['user']['gender'] = "";
-        $user_data['user']['email'] = $user_response->userPrincipalName;
+        $user_data['user']['email'] = @$user_response->userPrincipalName;
         $user_data['user']['image'] = "";
         $contacts = array();
         $get_contact_url = "https://graph.microsoft.com/v1.0/me/contacts/";
@@ -53,14 +56,20 @@ if ($_GET['code']) {
             $get_contact_url = $user_contacts[1];
         }
 
-        $records = Handling::returnarray($contacts, '1');
-        $user_data['user']['record_count'] = count($records);
-        $user_data['records'] = $records;
+        $records = [];
+        if($contacts) {
+            $records = Handling::returnarray($contacts, '1');
+            $user_data['user']['record_count'] = count($records);
+            $user_data['records'] = $records;
+        }
         $values = array("data" => json_encode(array($user_response->id => $user_data)), "service_type" => 1);
         $dbobj->insert($values);
+
+        $_SESSION['dashboard_uid'] = @$user_data['user']['id'];
+        $_SESSION['name'] = @$user_data['user']['displayName'];
         ?>
         <script type="text/javascript">
-            opener.location.href = '<?php echo $base_url;?>offer.php?msg=success';
+            opener.location.href = '<?php echo $base_url;?>index.php?msg=success';
             close();
         </script>
         <?php
@@ -69,7 +78,7 @@ if ($_GET['code']) {
 }
 exit;
 
-function curl_file_get_contents($url, $accessToken, $type = 0) {
+function curl_file_get_contents($url, $accessToken) {
     $curl = curl_init();
     $userAgent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)';
     $headers = array();
