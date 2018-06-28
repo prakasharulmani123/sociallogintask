@@ -1,0 +1,129 @@
+/* Tablet Layout: 768px. */
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .action-icon a {
+        display: inline-block;
+        margin-bottom: 7px
+        }
+    }
+/* Mobile Layout: 320px. */
+@media only screen and (max-width: 767px) {
+
+    .btn-filter {
+        display: block;
+        margin: 0 auto;
+        width: 90%
+        }
+    .post-status {
+        overflow: hidden
+        }
+    .headiing {
+        margin-bottom: 15px
+        }
+    .popup-inner {
+        left: -62%;
+        top: 120%
+        }
+    .popup-inner::before {
+        left: 11%;
+        right: inherit
+        }
+    .action-icon {
+        text-align: center
+        }
+
+    .user-name ,.user-info {
+         display: block;
+         padding-left: 0;
+        }
+
+    .post-title, .post-info {
+          padding-left: 0;
+          display: block;
+        }
+
+    .user-pic ,.post-img {
+         display: block;
+          float: none;
+      }
+
+    .nav > li {
+      display: inline-block;
+      position: relative;
+    }
+
+    #navbar-collapse .navbar-right {
+      text-align: center;
+    }
+
+    .user-actions .btn {
+      font-size: 10px;
+      padding: 5px;
+    }
+
+  
+
+    }
+
+
+/* Wide Mobile Layout: 480px. */
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+
+    .btn-filter {
+        display: block;
+        margin: 0 auto;
+        width: 90%
+        }
+    .post-status {
+        overflow: hidden
+        }
+    .headiing {
+        margin-bottom: 15px
+        }
+    .popup-inner {
+        left: -62%;
+        top: 120%
+        }
+    .popup-inner::before {
+        left: 11%;
+        right: inherit
+        }
+    .action-icon {
+        text-align: center
+        }
+
+    .user-name ,.user-info {
+          padding-left: 58px;
+        }
+
+    .post-title, .post-info {
+          padding-left: 0;
+          display: block;
+        }
+
+    .user-pic ,.post-img {
+        display: inherit;
+        float: left;
+      }
+
+    .nav > li {
+      display: inline-block;
+      position: relative;
+    }
+
+    #navbar-collapse .navbar-right {
+      text-align: center;
+    }
+
+    .user-actions .btn {
+      font-size: 10px;
+      padding: 5px;
+    }
+
+    .select-items > img {
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+
+
+    }

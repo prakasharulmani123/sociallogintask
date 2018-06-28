@@ -1,0 +1,17 @@
+# Use PHP 5.4
+# Use PHP54 as default
+#AddHandler application/x-httpd-php54 .php
+#<IfModule mod_suphp.c>
+#    suPHP_ConfigPath /opt/php54/lib
+#</IfModule>
+
+RewriteEngine on
+
+# For .php & .html URL's:
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+RewriteRule ^([^\.]+)$ $1.html [NC,L]
+RewriteRule index/(.*)/ index.php?type=$1
+RewriteRule index/(.*) index.php?type=$1
+
+
