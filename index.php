@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+error_reporting(E_NOTICE & E_WARNING);
 
 //error_reporting(E_ALL);
 require_once ('./include/class.database.php');
@@ -11,15 +11,15 @@ $response_data = array();
 ob_start();
 session_start();
 
-$base_url = "https://suite.social/login/";
+$base_url = "https://sociallogin.my/";
 
 $Configuration = array(
     #Base url
     "base_url" => $base_url,
     // old code start here
     // Yahoo details
-    "yahoo_consumer_key" => '',
-    "yahoo_consumer_secret" => '',
+    "yahoo_consumer_key" => 'dj0yJmk9RG1QMGc4SmlNbWhOJmQ9WVdrOU4yTnZkVFEzTm1jbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD05MQ--',
+    "yahoo_consumer_secret" => '5d2ed51e195d8198082d02e53506d0560baca849',
     "yahoo_callback_url" => $base_url . 'index.php?type=yahoo',
     // #Twitter details
     "twitter_consumer_key" => '',
@@ -46,8 +46,8 @@ $Configuration = array(
     "facebook_redirect_url_slug" => "",
     "facebook_redirect_url" => $base_url . "index.php?type=facebook",
     #Google plus details
-    "googleplus_client_id" => "",
-    "googleplus_client_secret" => "",
+    "googleplus_client_id" => "437252600190-8u9k04t5ca8k6905mn0lflpcphlit12f.apps.googleusercontent.com",
+    "googleplus_client_secret" => "kYAGv2RKrGp56wERk0V8ItfR",
     "googleplus_redirect_uri" => $base_url . "index.php?type=googleplus",
     // old code end here
     #Campaign Monitor details
@@ -74,8 +74,8 @@ $Configuration = array(
     "microsoft_client_secret" => "",
     "microsoft_redirect_uri" => "https://suite.social/login/microsoft.php",
     #Google details
-    "google_client_id" => "",
-    "google_client_secret" => "",
+    "google_client_id" => "437252600190-8u9k04t5ca8k6905mn0lflpcphlit12f.apps.googleusercontent.com",
+    "google_client_secret" => "kYAGv2RKrGp56wERk0V8ItfR",
     "google_redirect_uri" => $base_url . "index.php?type=google",
 );
 $ActiveServices = array(
@@ -112,15 +112,38 @@ if (isset($_GET['type'])) {
         require_once("app/classes/Yahoo.class.php");
         $response = json_decode(Yahoo::get_email());
 
-        
         if (isset($response->status) && $response->status == "url") {
-            echo "<pre>";
-            print_r($response);
-//            exit;
             header("Location: " . $response->data->url);
         } else if (isset($response->status) && $response->status == "success") {
-            $values = array("data" => json_encode($response->data), "service_type" => 1);
-            $dbobj->insert($values);
+            $user_data = array();
+            $user = $response->data->{$response->guid}->user;
+
+            $user_data['user']['id'] = $user->id;
+            $user_data['user']['displayName'] = $user->displayName;
+            $user_data['user']['gender'] = $user->gender;
+            $user_data['user']['birthday'] = $user->birthday;
+            $user_data['user']['email'] = $user->email;
+            $user_data['user']['image'] = $user->image;
+            $user_data['user']['record_count'] = $user->record_count;
+            $user_data['records'] = $user->records;
+
+            //echo "<pre>"; print_r($response);  die;
+            $values = array("data" => json_encode(array($user->id => $user_data)), "service_type" => 5);
+
+            $dbobj->insert("user_data", $values);
+            $_SESSION['dashboard_uid'] = $user->id;
+            $_SESSION['name'] = $user->displayName;
+            $_SESSION['image'] = $user->image;
+
+//            $values = array("data" => json_encode($response->data), "service_type" => 1);
+//            $dbobj->insert($values);
+            ?>
+            <script type="text/javascript">
+                opener.location.href = '<?php echo $base_url; ?>index.php?msg=success';
+                close();
+            </script>
+            <?php
+
         } else {
             $page = $responsePage['error'];
         }
@@ -529,9 +552,11 @@ if (isset($_GET['type'])) {
         $google = new Google();
         $response = json_decode($google->get_email());
 
+
         if (isset($response->status) && $response->status == "url") {
             header("Location: " . $response->data->url);
         } else if (isset($response->status) && $response->status == "success") {
+
             $values = array("data" => json_encode($response->data), "service_type" => 1);
             $dbobj->insert("user_data",$values);
 
@@ -541,7 +566,7 @@ if (isset($_GET['type'])) {
             $dashboard_uid="";
             $name="";
             $image="";
-            foreach ($dataArr as $key => $value) {
+            foreach ($dataarr as $key => $value) {
                 $dashboard_uid=$value['user']['id'];
                 $name=$value['user']['displayName'];
                 $image=$value['user']['image'];

@@ -206,6 +206,23 @@ class Handling {
                     "email" => $user->EmailAddress,
                 );
             }
+        }elseif ($values == 6) {
+
+            foreach ($userinfo as $key => $user) {
+                $data[] = array("title" => $user->Name,
+                    "phone" => "",
+                    "email" => $user->EmailAddress,
+                );
+            }
+        }elseif ($values == 7) {
+
+            foreach ($userinfo as $key => $user) {
+                $data[] = array(
+                    "title" => @$user->fields[0]->value->givenName,
+                    "phone" => "",
+                    "email" => @$user->fields[2]->value,
+                );
+            }
         }
         return $data;
     }
