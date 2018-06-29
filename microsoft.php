@@ -71,6 +71,7 @@ if ($_GET['code']) {
 
         $_SESSION['dashboard_uid'] = @$user_data['user']['id'];
         $_SESSION['name'] = @$user_data['user']['displayName'];
+        $_SESSION['image'] = $user_data['user']['image'];
         ?>
         <script type="text/javascript">
             opener.location.href = '<?php echo $base_url;?>index.php?msg=success';
