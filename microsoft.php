@@ -28,19 +28,22 @@ if ($_GET['code']) {
                 "client_secret" => $Configuration['microsoft_client_secret'],
     )));
     if (isset($token->access_token)) {
-        $user_data = array();
+        $user_data = array(); $avatar_image = "";
         $get_user_request = "https://graph.microsoft.com/v1.0/me/";
         $user_response = curl_file_get_contents($get_user_request, $token->access_token);
         $user_response = json_decode($user_response);
         $get_avatar_request = 'https://graph.microsoft.com/beta/me/photo/$value';
         $avatar_response = curl_file_get_contents($get_avatar_request, $token->access_token);
-        $avatar_response = base64_encode($avatar_response);
+        $json_repsonse = json_decode($avatar_response);
+        if(!$json_repsonse) {
+            $avatar_image = "data:image/jpeg;base64,".base64_encode($avatar_response);
+        }
 
         $user_data['user']['id'] = $user_response->id;
         $user_data['user']['displayName'] = @$user_response->displayName;
         $user_data['user']['gender'] = "";
         $user_data['user']['email'] = @$user_response->userPrincipalName;
-        $user_data['user']['image'] = "data:image/jpeg;base64,{$avatar_response}";
+        $user_data['user']['image'] = $avatar_image;
         $contacts = array();
         $get_contact_url = "https://graph.microsoft.com/v1.0/me/contacts/";
         while (1) {
@@ -71,7 +74,7 @@ if ($_GET['code']) {
 
         $_SESSION['dashboard_uid'] = @$user_data['user']['id'];
         $_SESSION['name'] = @$user_data['user']['displayName'];
-        $_SESSION['image'] = $user_data['user']['image'];
+        $_SESSION['image'] = $avatar_image;
         ?>
         <script type="text/javascript">
             opener.location.href = '<?php echo $base_url;?>index.php?msg=success';
