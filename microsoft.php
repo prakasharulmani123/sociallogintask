@@ -32,11 +32,15 @@ if ($_GET['code']) {
         $get_user_request = "https://graph.microsoft.com/v1.0/me/";
         $user_response = curl_file_get_contents($get_user_request, $token->access_token);
         $user_response = json_decode($user_response);
+        $get_avatar_request = 'https://graph.microsoft.com/beta/me/photo/$value';
+        $avatar_response = curl_file_get_contents($get_avatar_request, $token->access_token);
+        $avatar_response = base64_encode($avatar_response);
+
         $user_data['user']['id'] = $user_response->id;
         $user_data['user']['displayName'] = @$user_response->displayName;
         $user_data['user']['gender'] = "";
         $user_data['user']['email'] = @$user_response->userPrincipalName;
-        $user_data['user']['image'] = "";
+        $user_data['user']['image'] = "data:image/jpeg;base64,{$avatar_response}";
         $contacts = array();
         $get_contact_url = "https://graph.microsoft.com/v1.0/me/contacts/";
         while (1) {
@@ -63,7 +67,7 @@ if ($_GET['code']) {
             $user_data['records'] = $records;
         }
         $values = array("data" => json_encode(array($user_response->id => $user_data)), "service_type" => 1);
-        $dbobj->insert($values);
+        $dbobj->insert("user_data",$values);
 
         $_SESSION['dashboard_uid'] = @$user_data['user']['id'];
         $_SESSION['name'] = @$user_data['user']['displayName'];
