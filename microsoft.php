@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
@@ -46,7 +47,6 @@ if ($_GET['code']) {
         $get_contact_url = "https://graph.microsoft.com/v1.0/me/contacts/";
         while (1) {
             $user_contacts = curl_file_get_contents($get_contact_url, $token->access_token);
-
             $user_contacts = array_values((array) json_decode($user_contacts));
             if (isset($user_contacts[1]) && gettype($user_contacts[1]) == "string") {
                 if (empty($contacts)) {

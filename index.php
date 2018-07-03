@@ -1,7 +1,7 @@
 <?php
-//error_reporting(0);
+error_reporting(0);
 
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
 $response_data = array();
@@ -558,12 +558,11 @@ if (isset($_GET['type'])) {
 // For Microsoft
     if ($_GET['type'] == 'microsoft') {
 
-        if (!$ActiveServices["microsoft"]) {
-            exit("Service not active!");
+        require_once("./app/classes/Microsoft.class.php");
+        $response = json_decode(Microsoft::getEmail());
+        if (isset($response->status) && $response->status == "url") {
+            header("Location: " . $response->data->url);
         }
-        $scopes = urlencode('https://graph.microsoft.com/Contacts.Read https://graph.microsoft.com/User.Read');
-        $url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=" . $Configuration["microsoft_client_id"] . "&redirect_uri=" . $Configuration["microsoft_redirect_uri"] . "&response_type=code&scope=".$scopes;
-        header("Location: " . $url);
     }
 
 // For Gmail
