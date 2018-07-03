@@ -1,5 +1,4 @@
 <?php
-
 error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
@@ -8,13 +7,13 @@ ob_start();
 session_start();
 
 require_once("./app/classes/Handling.class.php");
-$base_url = "https://suite.social/login/";
+$base_url = "https://sociallogin.my/";
 $Configuration = array(
     #Base url
     "base_url" => $base_url,
     #Microsoft details
-    "microsoft_client_id" => "e84706ed-c325-43d0-a895-86fdf787418e",
-    "microsoft_client_secret" => "wxyFAGP15?~~voiwSXL260{",
+    "microsoft_client_id" => "9a20a74b-eba3-481f-96af-1c49790f3e50",
+    "microsoft_client_secret" => "tkumzuRAZ9252oTKPL4*{_!",
     "microsoft_redirect_uri" => $base_url."microsoft.php",
 );
 
@@ -47,6 +46,7 @@ if ($_GET['code']) {
         $get_contact_url = "https://graph.microsoft.com/v1.0/me/contacts/";
         while (1) {
             $user_contacts = curl_file_get_contents($get_contact_url, $token->access_token);
+
             $user_contacts = array_values((array) json_decode($user_contacts));
             if (isset($user_contacts[1]) && gettype($user_contacts[1]) == "string") {
                 if (empty($contacts)) {

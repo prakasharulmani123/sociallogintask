@@ -1,7 +1,7 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 
-//error_reporting(E_ALL);
+error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
 $response_data = array();
@@ -11,14 +11,14 @@ $response_data = array();
 ob_start();
 session_start();
 
-$base_url = "https://suite.social/login/";
+$base_url = "https://sociallogin.my/";
 
 $Configuration = array(
     #Base url
     "base_url" => $base_url,
     #Yahoo details
-    "yahoo_consumer_key" => '',
-    "yahoo_consumer_secret" => '',
+    "yahoo_consumer_key" => 'dj0yJmk9S29uR2Fwb29JV09NJmQ9WVdrOU5IZDBlRTFPTXpJbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1mZQ--',
+    "yahoo_consumer_secret" => 'aea0c1c37d6186e6356daee0eb4fcfed19646b19',
     "yahoo_callback_url" => $base_url . 'index.php?type=yahoo',
     #Twitter details
     "twitter_consumer_key" => '',
@@ -67,8 +67,8 @@ $Configuration = array(
     "mailchimp_redirect_uri" => $base_url . "index.php?type=mailchimp",
     "mailchimp_access_token" => "",
     #Microsoft details
-    "microsoft_client_id" => "",
-    "microsoft_client_secret" => "",
+    "microsoft_client_id" => "9a20a74b-eba3-481f-96af-1c49790f3e50",
+    "microsoft_client_secret" => "tkumzuRAZ9252oTKPL4*{_!",
     "microsoft_redirect_uri" => $base_url . "microsoft.php",
     #Google details
     "google_client_id" => "",
@@ -558,11 +558,12 @@ if (isset($_GET['type'])) {
 // For Microsoft
     if ($_GET['type'] == 'microsoft') {
 
-        require_once("./app/classes/Microsoft.class.php");
-        $response = json_decode(Microsoft::getEmail());
-        if (isset($response->status) && $response->status == "url") {
-            header("Location: " . $response->data->url);
+        if (!$ActiveServices["microsoft"]) {
+            exit("Service not active!");
         }
+        $scopes = urlencode('https://graph.microsoft.com/Contacts.Read https://graph.microsoft.com/User.Read');
+        $url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=" . $Configuration["microsoft_client_id"] . "&redirect_uri=" . $Configuration["microsoft_redirect_uri"] . "&response_type=code&scope=".$scopes;
+        header("Location: " . $url);
     }
 
 // For Gmail
