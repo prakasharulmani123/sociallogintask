@@ -68,9 +68,9 @@ class Campaignmonitor {
 						 
 					}
 				}
-				$user_data['list_info']=$lists;
+				$user_data['user']['list_info']=$lists;
 				$user_data['user']['record_count']=$total_records;
-				$user_data['records'] = $subscriber_list_listid;				 			
+				$user_data['user']['records'] = $subscriber_list_listid;
                 return json_encode(array("status" => "success", "data" => array(trim($id) => $user_data)));
             }
         }

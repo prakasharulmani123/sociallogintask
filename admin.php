@@ -18,12 +18,7 @@ if (isset($_POST['ajax']) && $_POST['ajax'] == "delete") {
     if (isset($_POST['list_id'])) {
         $list_id = $_POST['list_id'];
     }
-    $user_data = array();
-    foreach ($infos as $key => $values) {
-        if ($key == $user_key) {
-            $user_data = $values;
-        }
-    }
+    $user_data = @$infos[$user_key] ?: array();
     if (isset($_POST['list_id']) && !empty($_POST['list_id'])) {
         $contacts = $user_data->records->$list_id;
     } else {

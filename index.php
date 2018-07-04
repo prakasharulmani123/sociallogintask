@@ -1,7 +1,7 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 
-//error_reporting(E_ALL);
+error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
 $response_data = array();
@@ -11,14 +11,14 @@ $response_data = array();
 ob_start();
 session_start();
 
-$base_url = "https://sociallogin.my/";
+$base_url = "https://sociallogin.com/";
 
 $Configuration = array(
     #Base url
     "base_url" => $base_url,
     #Yahoo details
-    "yahoo_consumer_key" => 'dj0yJmk9S29uR2Fwb29JV09NJmQ9WVdrOU5IZDBlRTFPTXpJbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1mZQ--',
-    "yahoo_consumer_secret" => 'aea0c1c37d6186e6356daee0eb4fcfed19646b19',
+    "yahoo_consumer_key" => 'dj0yJmk9OFZYanhPV2E4dElvJmQ9WVdrOU5uTlBjMHhvTjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1mMw--',
+    "yahoo_consumer_secret" => '1498b56762ab8fe6f059fac25fe8b7ee78992cc0',
     "yahoo_callback_url" => $base_url . 'index.php?type=yahoo',
     #Twitter details
     "twitter_consumer_key" => '',
@@ -49,8 +49,8 @@ $Configuration = array(
     "googleplus_client_secret" => "",
     "googleplus_redirect_uri" => $base_url . "index.php?type=googleplus",
     #Campaign Monitor details
-    "campaignmonitor_client_id" => "",
-    "campaignmonitor_client_secret" => "",
+    "campaignmonitor_client_id" => "113850",
+    "campaignmonitor_client_secret" => "RuS4iXRyQ4k4ybGMFBsxIxChrJnf444ciYuZSeR4BIvu4q1PMwQWe4n4EJyti4IY4L44B4CY1y4RrN44",
     "campaignmonitor_redirect_uri" => $base_url . "index.php?type=campaignmonitor",
     #Get Response details
     "getresponse_client_id" => "",
@@ -69,7 +69,7 @@ $Configuration = array(
     #Microsoft details
     "microsoft_client_id" => "9a20a74b-eba3-481f-96af-1c49790f3e50",
     "microsoft_client_secret" => "tkumzuRAZ9252oTKPL4*{_!",
-    "microsoft_redirect_uri" => $base_url . "microsoft.php",
+    "microsoft_redirect_uri" => $base_url . "index/microsoft",
     #Google details
     "google_client_id" => "",
     "google_client_secret" => "",
@@ -108,7 +108,8 @@ if (isset($_GET['type'])) {
         }
         
         require_once("app/classes/Yahoo.class.php");
-        $response = json_decode(Yahoo::get_email());
+        $yahoo = new Yahoo();
+        $response = json_decode($yahoo->get_email());
 
         if (isset($response->status) && $response->status == "url") {
             header("Location: " . $response->data->url);
@@ -561,9 +562,41 @@ if (isset($_GET['type'])) {
         if (!$ActiveServices["microsoft"]) {
             exit("Service not active!");
         }
-        $scopes = urlencode('https://graph.microsoft.com/mail.read https://graph.microsoft.com/Contacts.Read https://graph.microsoft.com/User.Read');
-        $url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=" . $Configuration["microsoft_client_id"] . "&redirect_uri=" . $Configuration["microsoft_redirect_uri"] . "&response_type=code&scope=".$scopes;
-        header("Location: " . $url);
+        require_once("app/classes/Microsoft.class.php");
+        $microsoft = new Microsoft();
+        $response = json_decode($microsoft->get_email());
+
+        if (isset($response->status) && $response->status == "url") {
+            header("Location: " . $response->data->url);
+        } else if (isset($response->status) && $response->status == "success") {
+            $user_data = array();
+            $user = $response->data->{$response->guid}->user;
+
+            $user_data['user']['id'] = $user->id;
+            $user_data['user']['displayName'] = $user->displayName;
+            $user_data['user']['gender'] = $user->gender;
+            $user_data['user']['birthday'] = $user->birthday;
+            $user_data['user']['email'] = $user->email;
+            $user_data['user']['image'] = $user->image;
+            $user_data['user']['record_count'] = $user->record_count;
+            $user_data['records'] = $user->records;
+
+            $values = array("data" => json_encode(array($user_response->id => $user_data)), "service_type" => 1);
+            $dbobj->insert("user_data",$values);
+
+            $_SESSION['dashboard_uid'] = $user_data['user']['id'];
+            $_SESSION['name'] = $user_data['user']['displayName'] ;
+            $_SESSION['image'] = "https://suite.social/login/default.jpg";
+            ?>
+
+            <script type="text/javascript">
+                opener.location.href = '<?php echo $base_url;?>index.php?msg=success';
+                close();
+            </script>
+            <?php
+        } else {
+            $page = $responsePage['error'];
+        }
     }
 
 // For Gmail

@@ -215,14 +215,21 @@ class Handling {
                 );
             }
         }elseif ($values == 7) {
+            $data = [];
 
             foreach ($userinfo as $key => $user) {
-                $data[] = array(
-                    "title" => @$user->fields[0]->value->givenName,
-                    "phone" => "",
-                    "email" => @$user->fields[2]->value,
-                );
+                foreach($user->fields as $field){
+                    $value = $field->value;
+                    if($field->type == 'name'){
+                        $data[$key]["title"] = "{$value->givenName} {$value->middleName} {$value->familyName}";
+                    }else if($field->type == 'email'){
+                        $data[$key]["email"] = $value;
+                    }else if($field->type == 'phone'){
+                        $data[$key]["phone"] = $value;
+                    }
+                }
             }
+            $data = array_values($data);
         }
         return $data;
     }

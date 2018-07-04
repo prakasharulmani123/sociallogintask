@@ -9,9 +9,9 @@ RewriteEngine on
 
 # For .php & .html URL's:
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule index/(.*)/ redirect.php?type=$1&%{QUERY_STRING} [NC,L]
+RewriteRule index/(.*) redirect.php?type=$1&%{QUERY_STRING} [NC,L]
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 RewriteRule ^([^\.]+)$ $1.html [NC,L]
-RewriteRule index/(.*)/ index.php?type=$1
-RewriteRule index/(.*) index.php?type=$1
 
 
