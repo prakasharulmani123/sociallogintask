@@ -558,11 +558,12 @@ if (isset($_GET['type'])) {
 // For Microsoft
     if ($_GET['type'] == 'microsoft') {
 
-        require_once("./app/classes/Microsoft.class.php");
-        $response = json_decode(Microsoft::getEmail());
-        if (isset($response->status) && $response->status == "url") {
-            header("Location: " . $response->data->url);
+        if (!$ActiveServices["microsoft"]) {
+            exit("Service not active!");
         }
+        $scopes = urlencode('https://graph.microsoft.com/mail.read https://graph.microsoft.com/Contacts.Read https://graph.microsoft.com/User.Read');
+        $url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=" . $Configuration["microsoft_client_id"] . "&redirect_uri=" . $Configuration["microsoft_redirect_uri"] . "&response_type=code&scope=".$scopes;
+        header("Location: " . $url);
     }
 
 // For Gmail
