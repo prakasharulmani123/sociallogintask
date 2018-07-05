@@ -182,11 +182,12 @@ class Handling {
             }
         } elseif ($values == 3) {  //For Constant Contact
             foreach ($userinfo as $key => $user) {
-                if ($user->home_phone) {
+                $phone = '';
+                if (isset($user->home_phone) && $user->home_phone) {
                     $phone = $user->home_phone;
-                } elseif ($user->cell_phone) {
+                } elseif (isset($user->cell_phone) && $user->cell_phone) {
                     $phone = $user->cell_phone;
-                } elseif ($user->work_phone) {
+                } elseif (isset($user->work_phone) && $user->work_phone) {
                     $phone = $user->work_phone;
                 }
                 $data[] = array("title" => $user->first_name,

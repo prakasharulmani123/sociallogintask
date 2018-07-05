@@ -1,3 +1,4 @@
+<h1>Redirecting...Please wait....</h1>
 <?php
 $params = http_build_query($_REQUEST);
 if(@$_REQUEST['type'] != 'constantcontact') {
