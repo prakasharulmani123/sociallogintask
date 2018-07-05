@@ -27,7 +27,7 @@ class constantcontact {
             $user_data['user']['image'] = $profileinfo->company_logo;
             $cc_list = self::curl_file_get_contents("https://api.constantcontact.com/v2/lists?api_key=" . $Configuration["constantcontact_client_id"], $access_token);
             $cc_list = json_decode($cc_list);
-            $user_cc_list = array();
+            $user_cc_list = $members = array();
             if (!empty($cc_list)) {
                 $total_member_in_list = 0;
                 foreach ($cc_list as $list) {
@@ -36,34 +36,24 @@ class constantcontact {
                         "list_name" => $list->name,
                         "list_count" => $list->contact_count
                     );
+                    if($list->contact_count > 0){
+                        $list_members = self::curl_file_get_contents("https://api.constantcontact.com/v2/lists/" . $list->id . "/contacts?limit=50&api_key=" . $Configuration["constantcontact_client_id"], $access_token);
+                        $list_members = json_decode($list_members);
+                        $member = Handling::returnarray($list_members->results, 3);
+                        $members[$list->id] = $member;
+                    }
                     $total_member_in_list = $total_member_in_list + $list->contact_count;
                 }
             }
             $user_data['user']['record_count'] = $total_member_in_list;
             $user_data['list_info'] = $user_cc_list;
-            $members = array();
-            foreach ($user_cc_list as $mail_list) {
-                if ($mail_list['list_count'] > 0) {
-                    $list_members = self::curl_file_get_contents("https://api.constantcontact.com/v2/lists/" . $mail_list['listid'] . "/contacts?limit=50&api_key=" . $Configuration["constantcontact_client_id"], $access_token);
-                    $list_members = json_decode($list_members);
-                    $member = Handling::returnarray($list_members->results, 3);
-                    $members[$mail_list['listid']] = $member;
-                }
-            }
             $user_data['records'] = $members;
 
-            return json_encode(array("status" => "success", "data" => array(trim($profileinfo->login_id) => $user_data)));
+            return json_encode(array("status" => "success", "data" => array(trim($id) => $user_data)));
         }
-
-
-        #Auth URL
-//        $scopes = urlencode('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/contacts.readonly https://www.google.com/m8/feeds/');echo 
-
-        if ($_COOKIE['ctct'] == 0) {
+        else {
             $url = "https://oauth2.constantcontact.com/oauth2/oauth/siteowner/authorize?response_type=token&client_id=" . $Configuration["constantcontact_client_id"] . "&redirect_uri=" . urlencode($Configuration["constantcontact_redirect_uri"]);
             return json_encode(array("status" => "url", "data" => array("url" => $url)));
-        } else {
-            return true;
         }
     }
 

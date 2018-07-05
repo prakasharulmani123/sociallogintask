@@ -1,4 +1,4 @@
-<form id="frm-cc" action="http://localhost/contacts/offer.php">
+<form id="frm-cc" action="/index.php">
     <input type="hidden" name="type"  value="constantcontact"/>
     <input type="hidden" name="access_token" id="cc_access_token" value=""/> 
 </form>

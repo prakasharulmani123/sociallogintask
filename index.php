@@ -57,9 +57,9 @@ $Configuration = array(
     "getresponse_client_secret" => "",
     "getresponse_redirect_uri" => $base_url . "index.php?type=getresponse",
     #Constant Contact details
-    "constantcontact_client_id" => "",
-    "constantcontact_client_secret" => "",
-    "constantcontact_redirect_uri" => $base_url . "index.php?type=constantcontact",
+    "constantcontact_client_id" => "swkdhddked8ehh69jjb9nv3x",
+    "constantcontact_client_secret" => "vNErT5xR4AZXeXFXppwXJBNW",
+    "constantcontact_redirect_uri" => $base_url . "index/constantcontact",
     #Mailchimp details
     "mailchimp_client_id" => "",
     "mailchimp_client_secret" => "",
@@ -457,19 +457,19 @@ if (isset($_GET['type'])) {
         if (!$ActiveServices["constantcontact"]) {
             exit("Service not active!");
         }
-        if (!isset($_COOKIE['ctct'])) {
-
-            setcookie("ctct", "0");
-        } else {
-            if ($_COOKIE['ctct'] >= 1) {
-                unset($_COOKIE["ctct"]);
-                /* Or */
-                setcookie("ctct", "0", time() - 1);
-                if (!isset($_COOKIE['ctct'])) {
-                    header("Location: index.php?type=constantcontact");
-                }
-            }
-        }
+//        if (!isset($_COOKIE['ctct'])) {
+//
+//            setcookie("ctct", "0");
+//        } else {
+//            if ($_COOKIE['ctct'] >= 1) {
+//                unset($_COOKIE["ctct"]);
+//                /* Or */
+//                setcookie("ctct", "0", time() - 1);
+//                if (!isset($_COOKIE['ctct'])) {
+//                    header("Location: index.php?type=constantcontact");
+//                }
+//            }
+//        }
         // setcookie("ctct","1");
         // exit;
         require_once './constantcontact.php';
