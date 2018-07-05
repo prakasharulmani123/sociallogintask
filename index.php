@@ -53,8 +53,8 @@ $Configuration = array(
     "campaignmonitor_client_secret" => "RuS4iXRyQ4k4ybGMFBsxIxChrJnf444ciYuZSeR4BIvu4q1PMwQWe4n4EJyti4IY4L44B4CY1y4RrN44",
     "campaignmonitor_redirect_uri" => $base_url . "index.php?type=campaignmonitor",
     #Get Response details
-    "getresponse_client_id" => "",
-    "getresponse_client_secret" => "",
+    "getresponse_client_id" => "95ba6d27-8014-11e8-bb53-f04da2754d84",
+    "getresponse_client_secret" => "a2fa18b0140ba032afadc153a5d884ed1acb5db4",
     "getresponse_redirect_uri" => $base_url . "index.php?type=getresponse",
     #Constant Contact details
     "constantcontact_client_id" => "swkdhddked8ehh69jjb9nv3x",
@@ -472,12 +472,12 @@ if (isset($_GET['type'])) {
 //        }
         // setcookie("ctct","1");
         // exit;
-        require_once './constantcontact.php';
+       // require_once './constantcontact.php';
         require_once("app/classes/Constantcontact.class.php");
         $response = json_decode(Constantcontact::get_email());
 
         if (isset($response) && $response->status == "url") {
-            setcookie("ctct", $_COOKIE['ctct'] + 1);
+            //setcookie("ctct", $_COOKIE['ctct'] + 1);
             header("Location: " . $response->data->url);
         } else if (isset($response->status) && $response->status == "success") {
             $values = array("data" => json_encode($response->data), "service_type" => 1);

@@ -48,9 +48,9 @@ class Getresponse {
                         $total_member_in_list = $total_member_in_list + $count_contacts;
                     }
                 }             
-                $user_data['list_info'] = $user_cc_list;
+                $user_data['user']['list_info'] = $user_cc_list;
                 $user_data['user']['record_count'] = $total_member_in_list;             
-                $user_data['records'] = $member;                                       
+                $user_data['user']['records'] = $member;                                       
                 return json_encode(array("status" => "success", "data" => array($request->id => $user_data)));
             }
         }
