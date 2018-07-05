@@ -158,7 +158,7 @@ class Handling {
 
     public static function returnarray($userinfo, $values) {
         $data = array();
-        if ($values == 0) {
+        if ($values == 0) {  //For Google
             $userinfo = json_decode(str_replace("$", "", json_encode($userinfo)));
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->title->t,
@@ -166,7 +166,7 @@ class Handling {
                     "email" => $user->gdemail[0]->address,
                 );
             }
-        } elseif ($values == 1) {
+        } elseif ($values == 1) {  //For Microsoft
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => (empty($user->displayName) ? $user->fileAs : $user->displayName),
@@ -174,7 +174,7 @@ class Handling {
                     "email" => (isset($user->emailAddresses[0]->name) ? $user->emailAddresses[0]->name : ""),
                 );
             }
-        } elseif ($values == 2) {
+        } elseif ($values == 2) {  //For Mailchimp
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->merge_fields->FNAME . " " . $user->merge_fields->LNAME,
@@ -182,7 +182,7 @@ class Handling {
                     "email" => $user->email_address,
                 );
             }
-        } elseif ($values == 3) {
+        } elseif ($values == 3) {  //For Constant Contact
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->prefix_name,
@@ -190,7 +190,7 @@ class Handling {
                     "email" => $user->email_addresses[0]->email_address,
                 );
             }
-        } elseif ($values == 4) {
+        } elseif ($values == 4) {  //For Get Response
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->name,
@@ -198,7 +198,7 @@ class Handling {
                     "email" => $user->email,
                 );
             }
-        }elseif ($values == 5) {
+        }elseif ($values == 5) {  //For Campaign monitor
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->Name,
@@ -214,7 +214,7 @@ class Handling {
                     "email" => $user->EmailAddress,
                 );
             }
-        }elseif ($values == 7) {
+        }elseif ($values == 7) {  //For Yahoo
             $data = [];
 
             foreach ($userinfo as $key => $user) {

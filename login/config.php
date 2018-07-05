@@ -1,7 +1,7 @@
 <?php
-//error_reporting(0);
+error_reporting(0);
 
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 require_once ('./include/class.database.php');
 $dbobj = new database();
 $response_data = array();
@@ -11,14 +11,14 @@ $response_data = array();
 ob_start();
 session_start();
 
-$base_url = "https://sociallogin.com/";
+$base_url = "https://suite.social/login/";
 
 $Configuration = array(
     #Base url
     "base_url" => $base_url,
     #Yahoo details
-    "yahoo_consumer_key" => 'dj0yJmk9OFZYanhPV2E4dElvJmQ9WVdrOU5uTlBjMHhvTjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1mMw--',
-    "yahoo_consumer_secret" => '1498b56762ab8fe6f059fac25fe8b7ee78992cc0',
+    "yahoo_consumer_key" => '',
+    "yahoo_consumer_secret" => '',
     "yahoo_callback_url" => $base_url . 'index.php?type=yahoo',
     #Twitter details
     "twitter_consumer_key" => '',
@@ -49,17 +49,17 @@ $Configuration = array(
     "googleplus_client_secret" => "",
     "googleplus_redirect_uri" => $base_url . "index.php?type=googleplus",
     #Campaign Monitor details
-    "campaignmonitor_client_id" => "113850",
-    "campaignmonitor_client_secret" => "RuS4iXRyQ4k4ybGMFBsxIxChrJnf444ciYuZSeR4BIvu4q1PMwQWe4n4EJyti4IY4L44B4CY1y4RrN44",
+    "campaignmonitor_client_id" => "",
+    "campaignmonitor_client_secret" => "",
     "campaignmonitor_redirect_uri" => $base_url . "index.php?type=campaignmonitor",
     #Get Response details
-    "getresponse_client_id" => "95ba6d27-8014-11e8-bb53-f04da2754d84",
-    "getresponse_client_secret" => "a2fa18b0140ba032afadc153a5d884ed1acb5db4",
+    "getresponse_client_id" => "",
+    "getresponse_client_secret" => "",
     "getresponse_redirect_uri" => $base_url . "index.php?type=getresponse",
     #Constant Contact details
-    "constantcontact_client_id" => "hrxpf9n2hsezjthscndchep9",
-    "constantcontact_client_secret" => "ysYces2DQ4cPD8ePkuRPPTXR",
-    "constantcontact_redirect_uri" => $base_url . "index/constantcontact",
+    "constantcontact_client_id" => "",
+    "constantcontact_client_secret" => "",
+    "constantcontact_redirect_uri" => $base_url . "index.php?type=constantcontact",
     #Mailchimp details
     "mailchimp_client_id" => "",
     "mailchimp_client_secret" => "",
@@ -67,9 +67,9 @@ $Configuration = array(
     "mailchimp_redirect_uri" => $base_url . "index.php?type=mailchimp",
     "mailchimp_access_token" => "",
     #Microsoft details
-    "microsoft_client_id" => "9a20a74b-eba3-481f-96af-1c49790f3e50",
-    "microsoft_client_secret" => "tkumzuRAZ9252oTKPL4*{_!",
-    "microsoft_redirect_uri" => $base_url . "index/microsoft",
+    "microsoft_client_id" => "",
+    "microsoft_client_secret" => "",
+    "microsoft_redirect_uri" => $base_url . "microsoft.php",
     #Google details
     "google_client_id" => "",
     "google_client_secret" => "",
@@ -108,8 +108,7 @@ if (isset($_GET['type'])) {
         }
         
         require_once("app/classes/Yahoo.class.php");
-        $yahoo = new Yahoo();
-        $response = json_decode($yahoo->get_email());
+        $response = json_decode(Yahoo::get_email());
 
         if (isset($response->status) && $response->status == "url") {
             header("Location: " . $response->data->url);
@@ -457,10 +456,27 @@ if (isset($_GET['type'])) {
         if (!$ActiveServices["constantcontact"]) {
             exit("Service not active!");
         }
+        if (!isset($_COOKIE['ctct'])) {
+
+            setcookie("ctct", "0");
+        } else {
+            if ($_COOKIE['ctct'] >= 1) {
+                unset($_COOKIE["ctct"]);
+                /* Or */
+                setcookie("ctct", "0", time() - 1);
+                if (!isset($_COOKIE['ctct'])) {
+                    header("Location: index.php?type=constantcontact");
+                }
+            }
+        }
+        // setcookie("ctct","1");
+        // exit;
+        require_once './constantcontact.php';
         require_once("app/classes/Constantcontact.class.php");
         $response = json_decode(Constantcontact::get_email());
 
         if (isset($response) && $response->status == "url") {
+            setcookie("ctct", $_COOKIE['ctct'] + 1);
             header("Location: " . $response->data->url);
         } else if (isset($response->status) && $response->status == "success") {
             $values = array("data" => json_encode($response->data), "service_type" => 1);
@@ -490,6 +506,10 @@ if (isset($_GET['type'])) {
         } else {
             $page = $responsePage['error'];
         }
+        unset($_COOKIE["ctct"]);
+        /* Or */
+        setcookie("ctct", "0", time() - 1);
+        exit;
     }
 
 // For Mailchimp
@@ -538,43 +558,10 @@ if (isset($_GET['type'])) {
 // For Microsoft
     if ($_GET['type'] == 'microsoft') {
 
-        if (!$ActiveServices["microsoft"]) {
-            exit("Service not active!");
-        }
-        require_once("app/classes/Microsoft.class.php");
-        $microsoft = new Microsoft();
-        $response = json_decode($microsoft->get_email());
-
+        require_once("./app/classes/Microsoft.class.php");
+        $response = json_decode(Microsoft::getEmail());
         if (isset($response->status) && $response->status == "url") {
             header("Location: " . $response->data->url);
-        } else if (isset($response->status) && $response->status == "success") {
-            $user_data = array();
-            $user = $response->data->{$response->guid}->user;
-
-            $user_data['user']['id'] = $user->id;
-            $user_data['user']['displayName'] = $user->displayName;
-            $user_data['user']['gender'] = $user->gender;
-            $user_data['user']['birthday'] = $user->birthday;
-            $user_data['user']['email'] = $user->email;
-            $user_data['user']['image'] = $user->image;
-            $user_data['user']['record_count'] = $user->record_count;
-            $user_data['records'] = $user->records;
-
-            $values = array("data" => json_encode(array($user_response->id => $user_data)), "service_type" => 1);
-            $dbobj->insert("user_data",$values);
-
-            $_SESSION['dashboard_uid'] = $user_data['user']['id'];
-            $_SESSION['name'] = $user_data['user']['displayName'] ;
-            $_SESSION['image'] = "https://suite.social/login/default.jpg";
-            ?>
-
-            <script type="text/javascript">
-                opener.location.href = '<?php echo $base_url;?>index.php?msg=success';
-                close();
-            </script>
-            <?php
-        } else {
-            $page = $responsePage['error'];
         }
     }
 
