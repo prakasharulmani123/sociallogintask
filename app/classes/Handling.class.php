@@ -167,7 +167,6 @@ class Handling {
                 );
             }
         } elseif ($values == 1) {  //For Microsoft
-
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => (empty($user->displayName) ? $user->fileAs : $user->displayName),
                     "phone" => @$user->mobilePhone,
@@ -175,7 +174,6 @@ class Handling {
                 );
             }
         } elseif ($values == 2) {  //For Mailchimp
-
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->merge_fields->FNAME . " " . $user->merge_fields->LNAME,
                     "phone" => "",
@@ -183,22 +181,34 @@ class Handling {
                 );
             }
         } elseif ($values == 3) {  //For Constant Contact
-
             foreach ($userinfo as $key => $user) {
-                $data[] = array("title" => $user->prefix_name,
-                    "phone" => $user->cell_phone,
+                if ($user->home_phone) {
+                    $phone = $user->home_phone;
+                } elseif ($user->cell_phone) {
+                    $phone = $user->cell_phone;
+                } elseif ($user->work_phone) {
+                    $phone = $user->work_phone;
+                }
+                $data[] = array("title" => $user->first_name,
                     "email" => $user->email_addresses[0]->email_address,
-                );
+                    "phone" => $phone,
+                );                
             }
         } elseif ($values == 4) {  //For Get Response
-
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->name,
                     "phone" => "",
                     "email" => $user->email,
                 );
             }
-        }elseif ($values == 5) {  //For Campaign monitor
+        } elseif ($values == 5) {  //For Campaign monitor
+            foreach ($userinfo as $key => $user) {
+                $data[] = array("title" => $user->Name,
+                    "phone" => "",
+                    "email" => $user->EmailAddress,
+                );
+            }
+        } elseif ($values == 6) {
 
             foreach ($userinfo as $key => $user) {
                 $data[] = array("title" => $user->Name,
@@ -206,25 +216,17 @@ class Handling {
                     "email" => $user->EmailAddress,
                 );
             }
-        }elseif ($values == 6) {
-
-            foreach ($userinfo as $key => $user) {
-                $data[] = array("title" => $user->Name,
-                    "phone" => "",
-                    "email" => $user->EmailAddress,
-                );
-            }
-        }elseif ($values == 7) {  //For Yahoo
+        } elseif ($values == 7) {  //For Yahoo
             $data = [];
 
             foreach ($userinfo as $key => $user) {
-                foreach($user->fields as $field){
+                foreach ($user->fields as $field) {
                     $value = $field->value;
-                    if($field->type == 'name'){
+                    if ($field->type == 'name') {
                         $data[$key]["title"] = "{$value->givenName} {$value->middleName} {$value->familyName}";
-                    }else if($field->type == 'email'){
+                    } else if ($field->type == 'email') {
                         $data[$key]["email"] = $value;
-                    }else if($field->type == 'phone'){
+                    } else if ($field->type == 'phone') {
                         $data[$key]["phone"] = $value;
                     }
                 }
